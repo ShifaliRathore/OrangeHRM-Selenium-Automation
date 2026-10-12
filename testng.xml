@@ -11,5 +11,10 @@
         </classes>
 
     </test>
+    <test name="Admin Tests">
+        <classes>
+            <class name="orangehrm.tests.AdminTest"/>
+        </classes>
+    </test>
 
 </suite>
