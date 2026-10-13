@@ -1,19 +1,26 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-
 <suite name="OrangeHRM Suite">
 
     <test name="Login Tests">
-
         <classes>
-
             <class name="orangehrm.tests.LoginTest"/>
-
         </classes>
-
     </test>
+
     <test name="Admin Tests">
         <classes>
-            <class name="orangehrm.tests.AdminTest"/>
+            <class name="orangehrm.tests.AdminModuleTest"/>
+        </classes>
+    </test>
+
+    <test name="Time and Dashboard Tests">
+        <classes>
+            <class name="orangehrm.tests.TimeModuleTest"/>
+        </classes>
+    </test>
+    <test name="Dashboard Tests">
+        <classes>
+            <class name="orangehrm.tests.DashboardTest"/>
         </classes>
     </test>
 
