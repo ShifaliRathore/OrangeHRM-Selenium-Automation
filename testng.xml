@@ -24,4 +24,16 @@
         </classes>
     </test>
 
+<!--    <test name="Leave Module Tests">-->
+<!--        <classes>-->
+<!--            <class name="orangehrm.tests.LeaveModuleTest"/>-->
+<!--        </classes>-->
+<!--    </test>-->
+
+    <test name="Leave Config Tests">
+        <classes>
+            <class name="orangehrm.tests.LeaveConfigTest"/>
+        </classes>
+    </test>
+
 </suite>

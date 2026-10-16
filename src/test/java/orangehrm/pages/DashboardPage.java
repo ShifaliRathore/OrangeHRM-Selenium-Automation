@@ -31,6 +31,10 @@ public class DashboardPage {
     By timeMenu =
             By.xpath("//span[text()='Time']");
 
+    // Leave menu locator
+    By leaveMenu =
+            By.xpath("//span[text()='Leave']");
+
     // Verify Dashboard is displayed
     public boolean isDashboardDisplayed() {
         WebDriverWait wait =
@@ -84,6 +88,11 @@ public class DashboardPage {
         driver.get(
                 "https://opensource-demo.orangehrmlive.com/web/index.php/time/viewEmployeeTimesheet"
         );
+    }
+
+    // Click Leave menu
+    public void clickLeaveMenu() {
+        driver.findElement(leaveMenu).click();
     }
 
     // Logout from OrangeHRM
