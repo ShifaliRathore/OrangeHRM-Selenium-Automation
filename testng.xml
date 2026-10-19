@@ -18,17 +18,25 @@
             <class name="orangehrm.tests.TimeModuleTest"/>
         </classes>
     </test>
+
     <test name="Dashboard Tests">
         <classes>
             <class name="orangehrm.tests.DashboardTest"/>
         </classes>
     </test>
 
-<!--    <test name="Leave Module Tests">-->
-<!--        <classes>-->
-<!--            <class name="orangehrm.tests.LeaveModuleTest"/>-->
-<!--        </classes>-->
-<!--    </test>-->
+    <!--    <test name="Leave Module Tests">-->
+    <!--        <classes>-->
+    <!--            <class name="orangehrm.tests.LeaveModuleTest"/>-->
+    <!--        </classes>-->
+    <!--    </test>-->
+
+    <test name="Recruitment Tests" preserve-order="true">
+        <classes>
+            <class name="orangehrm.tests.RecruitmentTest"/>
+            <class name="orangehrm.tests.RecruitmentValidationTest"/>
+        </classes>
+    </test>
 
     <test name="Leave Config Tests">
         <classes>

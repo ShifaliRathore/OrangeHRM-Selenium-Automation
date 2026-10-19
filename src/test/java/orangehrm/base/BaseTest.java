@@ -58,13 +58,15 @@ public class BaseTest {
 
         driver.get(LOGIN_URL);
 
-        driver.findElement(By.name("username")).sendKeys("Admin");
-        driver.findElement(By.name("password")).sendKeys("admin123");
-        driver.findElement(By.xpath("//button[@type='submit']")).click();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("username")))
+                .sendKeys("Admin");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("password")))
+                .sendKeys("admin123");
+        wait.until(ExpectedConditions.elementToBeClickable(
+                By.xpath("//button[@type='submit']"))).click();
 
-        new WebDriverWait(driver, Duration.ofSeconds(15))
-                .until(ExpectedConditions.visibilityOfElementLocated(
-                        DASHBOARD_HEADING));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(DASHBOARD_HEADING));
     }
 
     /**
