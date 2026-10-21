@@ -221,7 +221,7 @@ public class RecruitmentValidationTest extends BaseTest {
         recruitment.openVacancies();
         vacancyCreated = true; // Ensure cleanup runs if save succeeds but a later wait fails.
         recruitment.addVacancy(testVacancyName, "QA Engineer", "Validation test vacancy",
-                "Adrienne Jeffery Bennett", "1");
+                "a", "1");
     }
 
     private void createTestCandidate() throws Exception {

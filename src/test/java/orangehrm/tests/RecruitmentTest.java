@@ -106,7 +106,7 @@ public class RecruitmentTest {
         recruitment.openVacancies();
         vacancyCreated = true;
         recruitment.addVacancy(vacancyName, "QA Engineer", "Expert in Selenium Webdriver",
-                "Timothy Lewis Amiano", "2");
+                "a", "2");
         recruitment.openCandidates();
         recruitment.openVacancies();
         recruitment.searchVacancy(vacancyName);
@@ -138,7 +138,7 @@ public class RecruitmentTest {
     @Test(dependsOnMethods = "shortlistCandidate", description = "Schedule the candidate interview")
     public void scheduleCandidateInterview() {
         RecruitmentPage recruitment = new RecruitmentPage(driver);
-        recruitment.scheduleInterview(interviewTitle, "Timothy Lewis Amiano", interviewDate, "01:00 PM");
+        recruitment.scheduleInterview(interviewTitle, "a", interviewDate, "01:00 PM");
         Assert.assertTrue(recruitment.hasStatus("Interview Scheduled"));
     }
 

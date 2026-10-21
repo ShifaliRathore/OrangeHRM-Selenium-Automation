@@ -67,7 +67,7 @@ public class RecruitmentPage {
         enter(input("Vacancy Name"), name);
         enter(textArea("Description"), description);
         enter(input("Hiring Manager"), hiringManager);
-        chooseSuggestion(hiringManager);
+        chooseThirdSuggestion();
         enter(input("Number of Positions"), positions);
         clickSaveWhenFormReady();
         // After creating a vacancy OrangeHRM may keep the form open at
@@ -173,7 +173,7 @@ public class RecruitmentPage {
                 By.xpath("//button[normalize-space()='Schedule Interview']"))).click();
         enter(input("Interview Title"), title);
         enter(input("Interviewer"), interviewer);
-        chooseSuggestion(interviewer);
+        chooseThirdSuggestion();
         enter(input("Date"), date);
         if (time != null && !time.isBlank() && !driver.findElements(input("Time")).isEmpty()) {
             enter(input("Time"), time);
@@ -304,12 +304,29 @@ public class RecruitmentPage {
         wait.until(ExpectedConditions.elementToBeClickable(option)).click();
     }
 
+    private void chooseThirdSuggestion() {
+        wait.until(d -> d.findElements(autocompleteOptions).size() >= 3);
+        wait.until(d -> {
+            List<WebElement> options = d.findElements(autocompleteOptions);
+            if (options.size() < 3) return false;
+            try {
+                WebElement thirdOption = options.get(2);
+                if (!thirdOption.isDisplayed() || !thirdOption.isEnabled()) return false;
+                thirdOption.click();
+                return true;
+            } catch (StaleElementReferenceException | ElementClickInterceptedException ignored) {
+                // The autocomplete can refresh while its suggestions are being displayed.
+                return false;
+            }
+        });
+    }
+
     private void chooseSuggestion(String expectedText) {
         WebElement option = wait.until(d -> {
             for (WebElement candidate : d.findElements(autocompleteOptions)) {
                 try {
                     String text = normalize(candidate.getText());
-                    if (matchesSuggestion(text, expectedText) && !text.contains("no records")) {
+                    if (text.contains(normalize(expectedText)) && !text.contains("no records")) {
                         return candidate;
                     }
                 } catch (StaleElementReferenceException ignored) {
@@ -319,16 +336,6 @@ public class RecruitmentPage {
             return null;
         });
         option.click();
-    }
-
-    private boolean matchesSuggestion(String actual, String expected) {
-        String normalizedExpected = normalize(expected);
-        if (actual.contains(normalizedExpected)) return true;
-
-        String[] nameParts = normalizedExpected.split(" ");
-        return nameParts.length > 1
-                && actual.contains(nameParts[0])
-                && actual.contains(nameParts[nameParts.length - 1]);
     }
 
     private void enter(By locator, String value) {
