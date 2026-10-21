@@ -56,6 +56,48 @@ public class PIMPage {
     public void resetSearch() {
         wait.until(ExpectedConditions.elementToBeClickable(resetButton)).click();
     }
+
+    // Test 3: Add Employee page opens
+    public void clickAddEmployee() {
+        By addButton = By.xpath("//button[normalize-space()='Add']");
+        wait.until(ExpectedConditions.elementToBeClickable(addButton)).click();
+    }
+
+    public boolean isAddEmployeeHeadingDisplayed() {
+        By addEmployeeHeading = By.xpath("//h6[text()='Add Employee']");
+        return wait.until(
+                ExpectedConditions.visibilityOfElementLocated(addEmployeeHeading)
+        ).isDisplayed();
+    }
+
+    // Test 4: Employee Name search field is displayed
+    public boolean isEmployeeNameSearchDisplayed() {
+        return wait.until(
+                ExpectedConditions.visibilityOfElementLocated(employeeNameSearch)
+        ).isDisplayed();
+    }
+
+    // Test 5: Employee ID search field is displayed
+    public boolean isEmployeeIdSearchDisplayed() {
+        By employeeIdSearch = By.xpath(
+                "//label[normalize-space()='Employee Id']/../..//input"
+        );
+
+        return wait.until(
+                ExpectedConditions.visibilityOfElementLocated(employeeIdSearch)
+        ).isDisplayed();
+    }
+
+    // Test 6: No records found for a nonexistent employee
+    public boolean isNoRecordsFoundDisplayed() {
+        By noRecordsMessage = By.xpath(
+                "//span[normalize-space()='No Records Found']"
+        );
+
+        return wait.until(
+                ExpectedConditions.visibilityOfElementLocated(noRecordsMessage)
+        ).isDisplayed();
+    }
 }
 
 
