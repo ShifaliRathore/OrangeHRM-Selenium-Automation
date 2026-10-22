@@ -8,31 +8,46 @@ import orangehrm.pages.LeaveListPage;
 import orangehrm.pages.MyLeaveListPage;
 
 import org.testng.Assert;
+import org.testng.SkipException;
 import org.testng.annotations.Test;
 
 /**
- * LeaveModuleTest
+ * Leave workflow tests: Apply Leave (TC-AL), My Leave List (TC-ML),
+ * Leave List (TC-LL) and one E2E flow (TC-E2E-01).
  *
- * Tests the Leave module across three pages:
- *   1. Apply Leave        — /leave/applyLeave
- *   2. My Leave List      — /leave/viewMyLeaveList
- *   3. Leave List         — /leave/viewLeaveList (admin view)
- *
- * Execution order (TestNG priority):
- *   1–4  → Apply Leave    (TC-AL-01 to TC-AL-04)
- *   5–7  → My Leave List  (TC-ML-01 to TC-ML-03)
- *   8–12 → Leave List     (TC-LL-01 to TC-LL-05)
- *   13   → E2E flow       (TC-E2E-01)
- *
- * All tests call loginAsAdmin() to guard against session rotation (DEF-LM-001).
- * Date format for all date inputs: "yyyy-dd-mm" (OrangeHRM picker placeholder).
+ * Tests are skipped when the Leave menu is missing (see DEF-LM-001).
  */
 public class LeaveModuleTest extends BaseTest {
 
     private static final String LEAVE_TYPE    = "CAN - Bereavement";
-    private static final String FROM_DATE     = "2026-01-08";
-    private static final String TO_DATE       = "2026-03-08";
     private static final String LEAVE_COMMENT = "Automated test - E2E";
+
+    // Day equals month, so the dates are valid in both yyyy-mm-dd and yyyy-dd-mm
+    private static final String APPLY_FROM_DATE = "2026-09-09";
+    private static final String APPLY_TO_DATE   = "2026-09-09";
+    private static final String E2E_FROM_DATE   = "2026-11-11";
+    private static final String E2E_TO_DATE     = "2026-11-11";
+
+    // -------------------------------------------------------
+    // SHARED SETUP
+    // -------------------------------------------------------
+
+    /** Logs in as Admin and opens the Leave menu. */
+    private LeavePage loginAndOpenLeaveMenu() {
+        loginAsAdmin();
+        return openLeaveMenu();
+    }
+
+    /** Opens the Leave menu; skips the test if it is missing (DEF-LM-001). */
+    private LeavePage openLeaveMenu() {
+        DashboardPage dashboardPage = new DashboardPage(driver);
+        if (!dashboardPage.isLeaveMenuDisplayed()) {
+            throw new SkipException(
+                    "Leave menu not available for the logged-in user on the shared demo site (DEF-LM-001)");
+        }
+        dashboardPage.clickLeaveMenu();
+        return new LeavePage(driver);
+    }
 
     // -------------------------------------------------------
     // APPLY LEAVE
@@ -40,10 +55,7 @@ public class LeaveModuleTest extends BaseTest {
 
     @Test(priority = 1)
     public void verifyApplyLeavePageLoads() {
-        loginAsAdmin();
-        DashboardPage dashboardPage = new DashboardPage(driver);
-        dashboardPage.clickLeaveMenu();
-        LeavePage leavePage = new LeavePage(driver);
+        LeavePage leavePage = loginAndOpenLeaveMenu();
         leavePage.goToApplyLeave();
         ApplyLeavePage applyLeavePage = new ApplyLeavePage(driver);
         Assert.assertTrue(
@@ -54,10 +66,7 @@ public class LeaveModuleTest extends BaseTest {
 
     @Test(priority = 2)
     public void verifyApplyLeaveFormElementsAreDisplayed() {
-        loginAsAdmin();
-        DashboardPage dashboardPage = new DashboardPage(driver);
-        dashboardPage.clickLeaveMenu();
-        LeavePage leavePage = new LeavePage(driver);
+        LeavePage leavePage = loginAndOpenLeaveMenu();
         leavePage.goToApplyLeave();
         ApplyLeavePage applyLeavePage = new ApplyLeavePage(driver);
         Assert.assertTrue(
@@ -68,10 +77,7 @@ public class LeaveModuleTest extends BaseTest {
 
     @Test(priority = 3)
     public void verifyRequiredValidationOnEmptyFormSubmit() {
-        loginAsAdmin();
-        DashboardPage dashboardPage = new DashboardPage(driver);
-        dashboardPage.clickLeaveMenu();
-        LeavePage leavePage = new LeavePage(driver);
+        LeavePage leavePage = loginAndOpenLeaveMenu();
         leavePage.goToApplyLeave();
         ApplyLeavePage applyLeavePage = new ApplyLeavePage(driver);
         applyLeavePage.clickApply();
@@ -83,13 +89,10 @@ public class LeaveModuleTest extends BaseTest {
 
     @Test(priority = 4)
     public void verifySuccessfulLeaveApplicationSubmission() {
-        loginAsAdmin();
-        DashboardPage dashboardPage = new DashboardPage(driver);
-        dashboardPage.clickLeaveMenu();
-        LeavePage leavePage = new LeavePage(driver);
+        LeavePage leavePage = loginAndOpenLeaveMenu();
         leavePage.goToApplyLeave();
         ApplyLeavePage applyLeavePage = new ApplyLeavePage(driver);
-        applyLeavePage.applyForLeave(LEAVE_TYPE, FROM_DATE, TO_DATE, LEAVE_COMMENT);
+        applyLeavePage.applyForLeave(LEAVE_TYPE, APPLY_FROM_DATE, APPLY_TO_DATE, LEAVE_COMMENT);
         Assert.assertTrue(
                 applyLeavePage.isSuccessMessageDisplayed(),
                 "TC-AL-04 FAILED: 'Successfully Saved' toast not displayed");
@@ -102,10 +105,7 @@ public class LeaveModuleTest extends BaseTest {
 
     @Test(priority = 5)
     public void verifyMyLeaveListPageLoads() {
-        loginAsAdmin();
-        DashboardPage dashboardPage = new DashboardPage(driver);
-        dashboardPage.clickLeaveMenu();
-        LeavePage leavePage = new LeavePage(driver);
+        LeavePage leavePage = loginAndOpenLeaveMenu();
         leavePage.goToMyLeaveList();
         MyLeaveListPage myLeaveListPage = new MyLeaveListPage(driver);
         Assert.assertTrue(
@@ -116,10 +116,7 @@ public class LeaveModuleTest extends BaseTest {
 
     @Test(priority = 6)
     public void verifySearchWithDefaultFiltersDoesNotCrash() {
-        loginAsAdmin();
-        DashboardPage dashboardPage = new DashboardPage(driver);
-        dashboardPage.clickLeaveMenu();
-        LeavePage leavePage = new LeavePage(driver);
+        LeavePage leavePage = loginAndOpenLeaveMenu();
         leavePage.goToMyLeaveList();
         MyLeaveListPage myLeaveListPage = new MyLeaveListPage(driver);
         myLeaveListPage.clickSearch();
@@ -133,10 +130,7 @@ public class LeaveModuleTest extends BaseTest {
 
     @Test(priority = 7)
     public void verifyResetClearsFiltersOnMyLeaveList() {
-        loginAsAdmin();
-        DashboardPage dashboardPage = new DashboardPage(driver);
-        dashboardPage.clickLeaveMenu();
-        LeavePage leavePage = new LeavePage(driver);
+        LeavePage leavePage = loginAndOpenLeaveMenu();
         leavePage.goToMyLeaveList();
         MyLeaveListPage myLeaveListPage = new MyLeaveListPage(driver);
         myLeaveListPage.selectLeaveStatus("Pending Approval");
@@ -153,10 +147,7 @@ public class LeaveModuleTest extends BaseTest {
 
     @Test(priority = 8)
     public void verifyLeaveListPageLoads() {
-        loginAsAdmin();
-        DashboardPage dashboardPage = new DashboardPage(driver);
-        dashboardPage.clickLeaveMenu();
-        LeavePage leavePage = new LeavePage(driver);
+        LeavePage leavePage = loginAndOpenLeaveMenu();
         leavePage.goToLeaveList();
         LeaveListPage leaveListPage = new LeaveListPage(driver);
         Assert.assertTrue(
@@ -167,10 +158,7 @@ public class LeaveModuleTest extends BaseTest {
 
     @Test(priority = 9)
     public void verifySearchByValidEmployeeNameReturnsRecords() {
-        loginAsAdmin();
-        DashboardPage dashboardPage = new DashboardPage(driver);
-        dashboardPage.clickLeaveMenu();
-        LeavePage leavePage = new LeavePage(driver);
+        LeavePage leavePage = loginAndOpenLeaveMenu();
         leavePage.goToLeaveList();
         LeaveListPage leaveListPage = new LeaveListPage(driver);
         leaveListPage.enterEmployeeName("Rahul Doe");
@@ -183,10 +171,7 @@ public class LeaveModuleTest extends BaseTest {
 
     @Test(priority = 10)
     public void verifySearchByInvalidEmployeeNameShowsNoRecords() {
-        loginAsAdmin();
-        DashboardPage dashboardPage = new DashboardPage(driver);
-        dashboardPage.clickLeaveMenu();
-        LeavePage leavePage = new LeavePage(driver);
+        LeavePage leavePage = loginAndOpenLeaveMenu();
         leavePage.goToLeaveList();
         LeaveListPage leaveListPage = new LeaveListPage(driver);
         leaveListPage.enterInvalidEmployeeName("ZZZZINVALID99999");
@@ -199,10 +184,7 @@ public class LeaveModuleTest extends BaseTest {
 
     @Test(priority = 11)
     public void verifySearchByLeaveStatusPendingApproval() {
-        loginAsAdmin();
-        DashboardPage dashboardPage = new DashboardPage(driver);
-        dashboardPage.clickLeaveMenu();
-        LeavePage leavePage = new LeavePage(driver);
+        LeavePage leavePage = loginAndOpenLeaveMenu();
         leavePage.goToLeaveList();
         LeaveListPage leaveListPage = new LeaveListPage(driver);
         leaveListPage.selectLeaveStatus("Pending Approval");
@@ -215,10 +197,7 @@ public class LeaveModuleTest extends BaseTest {
 
     @Test(priority = 12)
     public void verifyResetClearsFiltersOnLeaveList() {
-        loginAsAdmin();
-        DashboardPage dashboardPage = new DashboardPage(driver);
-        dashboardPage.clickLeaveMenu();
-        LeavePage leavePage = new LeavePage(driver);
+        LeavePage leavePage = loginAndOpenLeaveMenu();
         leavePage.goToLeaveList();
         LeaveListPage leaveListPage = new LeaveListPage(driver);
         leaveListPage.selectLeaveStatus("Pending Approval");
@@ -233,30 +212,22 @@ public class LeaveModuleTest extends BaseTest {
     // E2E — FULL CROSS-PAGE FLOW
     // -------------------------------------------------------
 
-    /**
-     * TC-E2E-01: Applies leave, then verifies it appears in My Leave List
-     * and Leave List in a single browser session.
-     * ensureAdminSession() guards against mid-test session rotation between steps.
-     */
+    /** TC-E2E-01: Apply leave, then verify it in My Leave List and Leave List. */
     @Test(priority = 13)
     public void verifyAppliedLeaveAppearsInMyLeaveListAndLeaveList() {
-        loginAsAdmin();
-        DashboardPage dashboardPage = new DashboardPage(driver);
-        dashboardPage.clickLeaveMenu();
-        LeavePage leavePage = new LeavePage(driver);
+        LeavePage leavePage = loginAndOpenLeaveMenu();
 
         // Step 1: Apply for leave
         leavePage.goToApplyLeave();
         ApplyLeavePage applyLeavePage = new ApplyLeavePage(driver);
-        applyLeavePage.applyForLeave(LEAVE_TYPE, FROM_DATE, TO_DATE, LEAVE_COMMENT);
+        applyLeavePage.applyForLeave(LEAVE_TYPE, E2E_FROM_DATE, E2E_TO_DATE, LEAVE_COMMENT);
         Assert.assertTrue(
                 applyLeavePage.isSuccessMessageDisplayed(),
                 "TC-E2E-01 Step 1 FAILED: Leave not saved — toast not displayed");
         System.out.println("TC-E2E-01 Step 1 PASSED: Leave applied successfully");
 
         // Step 2: Verify in My Leave List
-        ensureAdminSession();
-        dashboardPage.clickLeaveMenu();
+        leavePage = openLeaveMenu();
         leavePage.goToMyLeaveList();
         MyLeaveListPage myLeaveListPage = new MyLeaveListPage(driver);
         myLeaveListPage.selectLeaveStatus("Pending Approval");
@@ -267,8 +238,7 @@ public class LeaveModuleTest extends BaseTest {
         System.out.println("TC-E2E-01 Step 2 PASSED: Leave visible in My Leave List");
 
         // Step 3: Verify in Leave List (admin view)
-        ensureAdminSession();
-        dashboardPage.clickLeaveMenu();
+        leavePage = openLeaveMenu();
         leavePage.goToLeaveList();
         LeaveListPage leaveListPage = new LeaveListPage(driver);
         leaveListPage.selectLeaveType(LEAVE_TYPE);

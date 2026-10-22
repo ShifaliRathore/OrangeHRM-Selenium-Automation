@@ -10,11 +10,7 @@ import java.time.Duration;
 import java.util.List;
 
 /**
- * LeaveListPage
- *
- * Page object for: /leave/viewLeaveList (Admin view)
- * Accessible only to Admin or HR Manager. Subject to session rotation (DEF-LM-001).
- * Note: page heading uses h5, unlike other Leave pages which use h6.
+ * Page object for /leave/viewLeaveList (admin view).
  */
 public class LeaveListPage {
 
@@ -27,12 +23,13 @@ public class LeaveListPage {
     }
 
     // Locators
-    By leaveListHeading    = By.xpath("//h5[normalize-space()='Leave List']");
+    By leaveListHeading    = By.xpath("//*[self::h5 or self::h6][normalize-space()='Leave List']");
     By employeeNameInput   = By.xpath("//input[@placeholder='Type for hints...']");
     By leaveStatusDropdown = By.xpath("(//div[contains(@class,'oxd-select-text')])[1]");
     By leaveTypeDropdown   = By.xpath("(//div[contains(@class,'oxd-select-text')])[2]");
-    By fromDateInput       = By.xpath("(//input[@placeholder='yyyy-dd-mm'])[1]");
-    By toDateInput         = By.xpath("(//input[@placeholder='yyyy-dd-mm'])[2]");
+    // Date inputs use the label, not the placeholder (the date format changes)
+    By fromDateInput       = By.xpath("//label[contains(normalize-space(),'From Date')]/ancestor::div[contains(concat(' ',normalize-space(@class),' '),' oxd-input-group ')][1]//input");
+    By toDateInput         = By.xpath("//label[contains(normalize-space(),'To Date')]/ancestor::div[contains(concat(' ',normalize-space(@class),' '),' oxd-input-group ')][1]//input");
     By searchButton        = By.xpath("//button[normalize-space()='Search']");
     By resetButton         = By.xpath("//button[normalize-space()='Reset']");
     By resultRows          = By.xpath("//div[@class='oxd-table-body']/div");
@@ -67,12 +64,7 @@ public class LeaveListPage {
 
     // Filter actions
 
-    /**
-     * Types a valid employee name and selects the first autocomplete suggestion.
-     * Use enterInvalidEmployeeName() for names that will not match any employee.
-     *
-     * @param employeeName partial or full name to type
-     */
+    /** Types an employee name and selects the first autocomplete suggestion. */
     public void enterEmployeeName(String employeeName) {
         WebElement field = wait.until(
                 ExpectedConditions.elementToBeClickable(employeeNameInput));
@@ -83,11 +75,7 @@ public class LeaveListPage {
         driver.findElement(suggestion).click();
     }
 
-    /**
-     * Types a name without waiting for autocomplete — for invalid name searches.
-     *
-     * @param invalidName a string that produces no autocomplete hits
-     */
+    /** Types a name without waiting for autocomplete (for invalid-name searches). */
     public void enterInvalidEmployeeName(String invalidName) {
         WebElement field = wait.until(
                 ExpectedConditions.elementToBeClickable(employeeNameInput));

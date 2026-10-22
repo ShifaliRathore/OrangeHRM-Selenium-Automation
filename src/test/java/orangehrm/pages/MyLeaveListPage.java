@@ -10,11 +10,7 @@ import java.time.Duration;
 import java.util.List;
 
 /**
- * MyLeaveListPage
- *
- * Page object for: /leave/viewMyLeaveList
- * Shows the personal leave history of the currently logged-in user.
- * Subject to session rotation (DEF-LM-001).
+ * Page object for /leave/viewMyLeaveList (the logged-in user's own leave).
  */
 public class MyLeaveListPage {
 
@@ -27,9 +23,10 @@ public class MyLeaveListPage {
     }
 
     // Locators
-    By myLeaveListHeading  = By.xpath("//h6[normalize-space()='My Leave List']");
-    By fromDateInput       = By.xpath("(//input[@placeholder='yyyy-dd-mm'])[1]");
-    By toDateInput         = By.xpath("(//input[@placeholder='yyyy-dd-mm'])[2]");
+    By myLeaveListHeading  = By.xpath("//*[self::h5 or self::h6][normalize-space()='My Leave List']");
+    // Date inputs use the label, not the placeholder (the date format changes)
+    By fromDateInput       = By.xpath("//label[contains(normalize-space(),'From Date')]/ancestor::div[contains(concat(' ',normalize-space(@class),' '),' oxd-input-group ')][1]//input");
+    By toDateInput         = By.xpath("//label[contains(normalize-space(),'To Date')]/ancestor::div[contains(concat(' ',normalize-space(@class),' '),' oxd-input-group ')][1]//input");
     By leaveStatusDropdown = By.xpath("(//div[contains(@class,'oxd-select-text')])[1]");
     By leaveTypeDropdown   = By.xpath("(//div[contains(@class,'oxd-select-text')])[2]");
     By searchButton        = By.xpath("//button[normalize-space()='Search']");

@@ -90,6 +90,11 @@ public class DashboardPage {
         );
     }
 
+    // Verify Leave menu is available in the sidebar (it can disappear on the shared demo)
+    public boolean isLeaveMenuDisplayed() {
+        return !driver.findElements(leaveMenu).isEmpty();
+    }
+
     // Click Leave menu
     public void clickLeaveMenu() {
         driver.findElement(leaveMenu).click();

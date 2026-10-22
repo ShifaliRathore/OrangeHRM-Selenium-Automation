@@ -21,7 +21,7 @@ public class BaseTest {
     private static final By DASHBOARD_HEADING =
             By.xpath("//h6[text()='Dashboard']");
 
-    // Top-right profile name — used to detect mid-test session rotation
+    // Top-right profile name (the linked employee's name, not the login username)
     private static final By TOP_RIGHT_USERNAME =
             By.xpath("//p[@class='oxd-userdropdown-name']");
 
@@ -44,14 +44,9 @@ public class BaseTest {
      * the session is fully established before any test step runs.
      *
      * WHY THIS EXISTS:
-     * The OrangeHRM public demo site rotates the active session automatically
-     * to simulate different demo users (e.g. "Bilol Abdurasul", "Rahul Doe").
-     * If a test proceeds immediately after login without this confirmation,
-     * the rotated user may not have Admin permissions — causing pages like
-     * Apply Leave to render blank or redirect away.
-     *
-     * NOTE: Every test in LeaveModuleTest calls this instead of using
-     * LoginPage directly, so the Dashboard heading is always confirmed
+     * On the shared OrangeHRM public demo site, the Admin account's displayed
+     * name, sidebar menus and Leave data have been seen to change (see
+     * DEF-LM-001). Waiting for the Dashboard heading confirms login finished
      * before the first test action runs.
      */
     protected void loginAsAdmin() {
@@ -70,14 +65,14 @@ public class BaseTest {
     }
 
     /**
-     * Returns true if the top-right profile name still shows "Admin".
+     * Returns true if the top-right profile name equals "Admin".
      *
-     * The demo site can rotate the session mid-test between navigations.
-     * This method reads the username element in the top-right corner to
-     * detect whether rotation has occurred since login.
-     *
-     * NOTE: Uses a short 5-second wait so it does not slow tests down
-     * significantly when called between steps of a multi-step test.
+     * KNOWN LIMITATION: the top-right name is the linked EMPLOYEE's name, not
+     * the login username, and it never reads "Admin" on the demo site. This
+     * method therefore always returns false, so ensureAdminSession() always
+     * logs in again. It is left unchanged because other test classes call
+     * ensureAdminSession() (e.g. RecruitmentValidationTest cleanup).
+     * LeaveModuleTest no longer uses it.
      */
     protected boolean isSessionStillAdmin() {
         try {
@@ -92,9 +87,8 @@ public class BaseTest {
     }
 
     /**
-     * Re-establishes the Admin session if the demo site has rotated it.
-     * Safe to call between steps in a multi-step test — if the session
-     * is already Admin it does nothing and returns immediately.
+     * Logs in again unless isSessionStillAdmin() returns true. Because of the
+     * limitation described there, this currently always performs a fresh login.
      *
      * NOTE: Do not call this mid-form. It navigates away from the current
      * page which will lose any unsaved form state. Only call between steps.
@@ -102,7 +96,7 @@ public class BaseTest {
     protected void ensureAdminSession() {
         if (!isSessionStillAdmin()) {
             System.out.println(
-                    "WARNING: Session rotated away from Admin — re-establishing login");
+                    "WARNING: Could not confirm Admin session — logging in again");
             loginAsAdmin();
         }
     }
