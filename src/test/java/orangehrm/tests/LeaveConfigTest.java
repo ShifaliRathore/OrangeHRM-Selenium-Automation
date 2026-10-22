@@ -7,23 +7,11 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * LeaveConfigTest
+ * Leave configuration tests: Leave Types (TC-LT), Work Week (TC-WW),
+ * Holiday List (TC-HO) and Leave Period (TC-LP).
  *
- * Tests the four Leave Configuration pages of OrangeHRM:
- *   Leave Types    — /leave/leaveTypeList
- *   Work Week      — /leave/defineWorkWeek
- *   Holiday List   — /leave/viewHolidayList
- *   Leave Period   — /leave/defineLeavePeriod
- *
- * These are system-wide configuration pages. They display identical data
- * for any Admin session and are unaffected by session rotation (DEF-LM-001).
- * They serve as a stable, always-passing baseline for the Leave module suite.
- *
- * Execution order:
- *   priority 1–3   → TC-LT-*  Leave Types
- *   priority 4–6   → TC-WW-*  Work Week
- *   priority 7–10  → TC-HO-*  Holiday List
- *   priority 11–12 → TC-LP-*  Leave Period
+ * These pages do not depend on the logged-in employee, so they are not
+ * affected by DEF-LM-001.
  */
 public class LeaveConfigTest extends BaseTest {
 
@@ -80,11 +68,7 @@ public class LeaveConfigTest extends BaseTest {
         System.out.println("TC-WW-01 PASSED: Work Week page loaded successfully");
     }
 
-    /**
-     * Verifies the Work Week form renders exactly 7 rows — one per day.
-     * This is a structural check; the row count is fixed regardless of
-     * which days are configured as working days.
-     */
+    /** Work Week form has exactly 7 rows, one per day. */
     @Test(priority = 5)
     public void verifyWorkWeekTableHasSevenDayRows() {
         loginAsAdmin();
@@ -111,10 +95,7 @@ public class LeaveConfigTest extends BaseTest {
     // HOLIDAY LIST (TC-HO-*)
     // ============================================================
 
-    /**
-     * NOTE: The rendered heading text is "Holidays" — not "Holiday List".
-     * The URL path is /viewHolidayList but the page h5 reads "Holidays".
-     */
+    /** The page heading reads "Holidays", not "Holiday List". */
     @Test(priority = 7)
     public void verifyHolidayListPageLoads() {
         loginAsAdmin();
@@ -148,10 +129,7 @@ public class LeaveConfigTest extends BaseTest {
         System.out.println("TC-HO-03 PASSED: 'Add' button is visible on Holiday List page");
     }
 
-    /**
-     * Clicks Search with no filters and accepts either rows or "No Records Found"
-     * as valid — both outcomes are correct depending on demo site data state.
-     */
+    /** Search with no filters; rows or "No Records Found" are both valid. */
     @Test(priority = 10)
     public void verifyHolidayListSearchRendersValidState() {
         loginAsAdmin();

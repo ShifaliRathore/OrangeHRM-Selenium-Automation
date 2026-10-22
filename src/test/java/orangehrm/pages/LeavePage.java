@@ -8,10 +8,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 
 /**
- * LeavePage — Navigation Hub
- *
- * Handles sub-menu navigation within the Leave section.
- * Call dashboardPage.clickLeaveMenu() before using any goTo* method.
+ * Leave sub-menu navigation. Call dashboardPage.clickLeaveMenu() first.
  */
 public class LeavePage {
 
@@ -25,7 +22,8 @@ public class LeavePage {
 
     // Locators
     By applyLeaveMenu  = By.xpath("//a[normalize-space()='Apply']");
-    By myLeaveListMenu = By.xpath("//a[normalize-space()='My Leave List']");
+    // The tab is labelled "My Leave"; the page it opens is "My Leave List"
+    By myLeaveListMenu = By.xpath("//a[normalize-space()='My Leave']");
     By leaveListMenu   = By.xpath("//a[normalize-space()='Leave List']");
     By leaveHeading    = By.xpath("//h6[text()='Leave']");
 

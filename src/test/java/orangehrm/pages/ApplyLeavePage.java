@@ -10,11 +10,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 
 /**
- * ApplyLeavePage
- *
- * Page object for: /leave/applyLeave
- * Subject to session rotation (DEF-LM-001) — loginAsAdmin() in BaseTest
- * mitigates this at test start.
+ * Page object for /leave/applyLeave.
  */
 public class ApplyLeavePage {
 
@@ -27,10 +23,11 @@ public class ApplyLeavePage {
     }
 
     // Locators
-    By applyLeaveHeading       = By.xpath("//h6[normalize-space()='Apply Leave']");
+    By applyLeaveHeading       = By.xpath("//*[self::h5 or self::h6][normalize-space()='Apply Leave']");
     By leaveTypeDropdown       = By.xpath("(//div[contains(@class,'oxd-select-text')])[1]");
-    By fromDateInput           = By.xpath("(//input[@placeholder='yyyy-dd-mm'])[1]");
-    By toDateInput             = By.xpath("(//input[@placeholder='yyyy-dd-mm'])[2]");
+    // Date inputs use the label, not the placeholder (the date format changes)
+    By fromDateInput           = By.xpath("//label[contains(normalize-space(),'From Date')]/ancestor::div[contains(concat(' ',normalize-space(@class),' '),' oxd-input-group ')][1]//input");
+    By toDateInput             = By.xpath("//label[contains(normalize-space(),'To Date')]/ancestor::div[contains(concat(' ',normalize-space(@class),' '),' oxd-input-group ')][1]//input");
     By commentsTextarea        = By.xpath("//textarea[@placeholder='Type here']");
     By applyButton             = By.xpath("//button[normalize-space()='Apply']");
     By successToast            = By.id("oxd-toaster_1");
@@ -76,7 +73,8 @@ public class ApplyLeavePage {
     }
 
     /**
-     * @param date format "yyyy-dd-mm" matching the placeholder
+     * @param date in the site's date format; use equal day and month
+     *             (e.g. "2026-11-11") so either format works
      */
     public void enterFromDate(String date) {
         WebElement field = wait.until(
@@ -87,9 +85,7 @@ public class ApplyLeavePage {
         field.sendKeys(Keys.TAB);
     }
 
-    /**
-     * @param date format "yyyy-dd-mm" matching the placeholder
-     */
+    /** @param date see enterFromDate */
     public void enterToDate(String date) {
         WebElement field = wait.until(
                 ExpectedConditions.elementToBeClickable(toDateInput));
@@ -141,12 +137,9 @@ public class ApplyLeavePage {
     }
 
     /**
-     * Fills and submits a complete leave application.
+     * Fills and submits the leave application.
      *
-     * @param leaveType exact leave type text
-     * @param fromDate  "yyyy-dd-mm"
-     * @param toDate    "yyyy-dd-mm"
-     * @param comments  optional — pass null or empty to skip
+     * @param comments optional; null or empty to skip
      */
     public void applyForLeave(String leaveType, String fromDate,
                                String toDate, String comments) {
